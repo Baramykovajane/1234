@@ -33,7 +33,7 @@ export default function NoteList({ notes }: NoteListProps) {
 
         <Link
           href={`/notes/${note.id}`}
-          className={css.detailsLink}
+          className={css.link}
         >
           View details
         </Link>
