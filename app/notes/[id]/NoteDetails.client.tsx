@@ -1,35 +1,36 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { fetchNoteById } from "@/lib/api";
 import { useRouter } from 'next/navigation';
 
-export default function NoteDetailsClient() {
-  const params = useParams();
-  const id = params.id as string;
-const router = useRouter();
+interface Props {
+  id: string;
+}
+
+export default function NoteDetailsClient({ id }: Props) {
+  const router = useRouter();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-
     enabled: !!id,
-
-    
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   });
-const handleGoBack = () => {
+
+  const handleGoBack = () => {
     const isSure = confirm('Are you sure?');
-    if (isSure) {
-      router.back();
-    }
+    if (!isSure) return;
+    if (window.history.length > 1) router.back();
+    else router.push("/notes");
   };
+
   if (!id) return <p>Note ID not found.</p>;
   if (isLoading) return <p>Loading, please wait...</p>;
-  if (error) return <p>Error: {(error as Error).message}</p>;
+  if (error && error instanceof Error) return <p>Error: {error.message}</p>;
   if (!data) return <p>Note not found.</p>;
 
   return (

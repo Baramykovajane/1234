@@ -1,19 +1,23 @@
-import { fetchNoteById } from "@/lib/api";
-import { notFound } from "next/navigation";
-import NotePreviewClient from "./NotePreview";
+
+import { fetchNoteById } from '@/lib/api';
+
+import Modal from '@/components/NotePreview/NotePreview';
 
 type Props = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
-export default async function NotePreview({ params }: Props) {
-  const note = await fetchNoteById(params.id).catch(() => null);
+const NotePreview = async ({ params }: Props) => {
+  const { id } = await params;
+  const note = await fetchNoteById(id);
 
-  if (!note) {
-    notFound();
-  }
+  return (
+    <Modal>
+      <h2>{note.title}</h2>
+      <p>{note.content}</p>
+    </Modal>
+  );
+};
 
-  return <NotePreviewClient note={note} />;
-}
+export default NotePreview;
+

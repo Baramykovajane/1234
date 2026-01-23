@@ -1,33 +1,14 @@
+import NotesClient from "./Notes.client";
 
+type Props = { params: Promise<{ slug?: string[] }> };
 
-import { getNotes } from "@/lib/api";
-import NoteList from "@/components/NoteList/NoteList";
-import type { FetchNotesResponse } from "@/lib/api";
+export default async function NotesByTag({ params }: Props) {
+  const resolvedParams = await params; 
+  const slug = resolvedParams.slug || [];
+  const tag =
+    slug[0] && slug[0] !== 'all'
+      ? slug[0][0].toUpperCase() + slug[0].slice(1)
+      : undefined;
 
-type Props = { params: { slug?: string[] } };
-const PER_PAGE = 12;
-
-const NotesByTag = async ({ params }: Props) => {
-  const slug = params.slug || [];
-
-  const tag = slug[0] && slug[0] !== "all" ? slug[0] : undefined;
-
-  const data: FetchNotesResponse = await getNotes({
-    page: 1,
-    perPage: PER_PAGE,
-    search: undefined,
-    tag,
-  });
-
-  if (!data?.notes?.length) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg mb-4">No notes found</p>
-      </div>
-    );
-  }
-
-  return <NoteList notes={data.notes} />;
-};
-
-export default NotesByTag;
+  return <NotesClient tag={tag} />;
+}
